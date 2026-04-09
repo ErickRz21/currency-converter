@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+
+:root {
+  --font-sans: 'Inter', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background: #050b1a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Animated gradient background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+  rgb(21, 28, 43);
+    /* radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 70%); */
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root, main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 32px 64px rgba(0,0,0,0.5),
+    0 0 80px rgba(99,102,241,0.06);
+}
+
+/* Custom select styling */
+.currency-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236366f1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.1rem;
+  padding-right: 2.5rem;
+}
+
+/* Glowing input focus */
+.glow-input:focus {
+  outline: none;
+  border-color: rgb(99, 102, 241);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25), 0 0 20px rgba(99,102,241,0.15);
+}
+
+/* Swap button spin animation */
+@keyframes spin-once {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(180deg); }
+}
+.swap-spin {
+  animation: spin-once 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Pulse shimmer for loading */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, rgba(99,102,241,0.08) 25%, rgba(99,102,241,0.18) 50%, rgba(99,102,241,0.08) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 0.5rem;
+}
+
+/* Fade-in for result */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-slide-up {
+  animation: fadeSlideUp 0.3s ease forwards;
+}
+
+.from-to {
+@apply w-full bg-slate-900/60 border border-slate-700/50 rounded-xl py-3 pl-4 text-base font-medium text-white transition-all hover:bg-slate-800/80 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 truncate;
+}

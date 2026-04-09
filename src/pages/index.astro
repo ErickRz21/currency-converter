@@ -1,0 +1,24 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CurrencyConverter from "../components/CurrencyConverter";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+	<main
+		class="min-h-screen py-16 px-4 flex flex-col items-center justify-center relative"
+	>
+		<div
+			class="absolute top-8 left-0 right-0 text-center z-10 pointer-events-none opacity-50"
+		>
+			<div
+				class="inline-block px-4 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 backdrop-blur-md text-xs font-medium text-indigo-300"
+			>
+				Powered by Frankfurter API
+			</div>
+		</div>
+
+		<CurrencyConverter client:load />
+	</main>
+	<Footer />
+</Layout>
