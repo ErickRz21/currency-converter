@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { CurrenciesResponse, RatesResponse } from '../types/currency';
 
 const POPULAR_PAIRS = [
-  { from: 'USD', to: 'MXN' },
+  { from: 'MXN', to: 'USD' },
   { from: 'CAD', to: 'MXN' },
   { from: 'EUR', to: 'MXN' },
   { from: 'GBP', to: 'MXN' },
@@ -15,7 +15,7 @@ export default function CurrencyConverter() {
 
   const [amount, setAmount] = useState<string>('1.00');
   const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('EUR');
+  const [toCurrency, setToCurrency] = useState('MXN');
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
