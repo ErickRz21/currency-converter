@@ -4,7 +4,7 @@ export const GET: APIRoute = async ({ url }) => {
   const base = url.searchParams.get('base')?.toUpperCase() ?? 'USD';
 
   try {
-    const res = await fetch(`https://api.frankfurter.app/latest?base=${base}`);
+    const res = await fetch(`https://api.frankfurter.dev/v2/rates?base=${base}`);
 
     if (!res.ok) {
       return new Response(
@@ -13,7 +13,19 @@ export const GET: APIRoute = async ({ url }) => {
       );
     }
 
-    const data = await res.json();
+    // v2 returns an array [{date, base, quote, rate}]; normalize to v1 shape:
+    // { amount: 1, base, date, rates: { CODE: value } }
+    const rows: { date: string; base: string; quote: string; rate: number }[] = await res.json();
+
+    const rates: Record<string, number> = {};
+    let date = '';
+    for (const row of rows) {
+      rates[row.quote] = row.rate;
+      date = row.date;
+    }
+
+    const data = { amount: 1, base, date, rates };
+
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -25,3 +37,4 @@ export const GET: APIRoute = async ({ url }) => {
     );
   }
 };
+

@@ -27,9 +27,6 @@ body::before {
   inset: 0;
   background:
   rgb(21, 28, 43);
-    /* radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 70%); */
   pointer-events: none;
   z-index: 0;
 }
@@ -100,5 +97,10 @@ body::before {
 }
 
 .from-to {
-@apply w-full bg-slate-900/60 border border-slate-700/50 rounded-xl py-3 pl-4 text-base font-medium text-white transition-all hover:bg-slate-800/80 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 truncate;
+  @apply w-full bg-slate-900/60 border border-slate-700/50 rounded-xl py-3 pl-4 text-base font-medium text-white transition-all
+hover:bg-slate-800/80 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 truncate cursor-pointer;
+}
+
+.footer-link {
+  @apply hover:text-white duration-300;
 }

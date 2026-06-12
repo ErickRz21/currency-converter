@@ -140,7 +140,7 @@ export default function CurrencyConverter() {
                   </select>
                 </div>
               ) : (
-                <div className="h-[50px] skeleton w-full"></div>
+                <div className="h-12.5 skeleton w-full"></div>
               )}
             </div>
 
@@ -148,7 +148,7 @@ export default function CurrencyConverter() {
             <div className="flex justify-center pb-1">
               <button
                 onClick={handleSwap}
-                className={`p-3 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg transition-all hover:scale-110 active:scale-95 ${isSwapping ? 'swap-spin' : ''}`}
+                className={`p-3 rounded-full bg-indigo-500 hover:bg-indigo-400 cursor-pointer text-white shadow-lg transition-all hover:scale-110 active:scale-95 ${isSwapping ? 'swap-spin' : ''}`}
                 aria-label="Swap currencies"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,13 +178,13 @@ export default function CurrencyConverter() {
                   </select>
                 </div>
               ) : (
-                <div className="h-[50px] skeleton w-full"></div>
+                <div className="h-12.5 skeleton w-full"></div>
               )}
             </div>
           </div>
 
           {/* Result */}
-          <div className="mt-8 bg-slate-900/40 rounded-xl p-6 border border-slate-800/60 text-center relative overflow-hidden min-h-[140px] flex flex-col justify-center">
+          <div className="mt-8 bg-slate-900/40 rounded-xl p-6 border border-slate-800/60 text-center relative overflow-hidden min-h-30 flex flex-col justify-center">
             {loading ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 bg-slate-900/20 backdrop-blur-sm z-10 fade-slide-up">
                 <div className="w-3/4 h-12 skeleton mx-auto rounded-lg"></div>
@@ -192,7 +192,7 @@ export default function CurrencyConverter() {
               </div>
             ) : (
               <div className="fade-slide-up">
-                <div className="text-4xl sm:text-5xl font-bold text-white tracking-tight break-words">
+                <div className="text-4xl sm:text-5xl font-bold text-white tracking-tight wrap-break-word">
                   <span className="text-indigo-400 mr-2">{toCurrency === 'USD' ? '$' : toCurrency === 'EUR' ? '€' : toCurrency === 'GBP' ? '£' : toCurrency === 'MXN' ? '$' : ''}</span>
                   {result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                 </div>
@@ -216,7 +216,7 @@ export default function CurrencyConverter() {
                     setFromCurrency(pair.from);
                     setToCurrency(pair.to);
                   }}
-                  className="text-xs px-3 py-1.5 rounded-full border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 hover:text-indigo-200 transition-colors bg-slate-900/50 shadow-sm"
+                  className="text-xs px-3 py-1.5 rounded-full border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 hover:text-indigo-200 transition-colors bg-slate-900/50 shadow-sm cursor-pointer"
                 >
                   {pair.from} → {pair.to}
                 </button>
