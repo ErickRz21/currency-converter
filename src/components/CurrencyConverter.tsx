@@ -335,7 +335,7 @@ export default function CurrencyConverter() {
                 </div>
 
                 {rates?.date && (
-                  <div className="mt-4 text-sm text-emerald-300/70 py-1 px-3 bg-black/60 rounded-full inline-block border border-emerald-700/50">
+                  <div className="mt-4 text-xs lg:text-sm text-emerald-300/70 py-1 px-3 bg-black/60 rounded-full inline-block border border-emerald-700/50">
                     Rate {rates.rates[toCurrency]?.toFixed(4) || 1} • Updated{" "}
                     {rates.date}
                   </div>
