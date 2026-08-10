@@ -198,11 +198,21 @@ export default function CurrencyConverter() {
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (val === '' || /^\d*\.?\d*$/.test(val)) {
-      setAmount(val);
+    // Strip commas before validating/storing
+    const raw = e.target.value.replace(/,/g, '');
+    if (raw === '' || /^\d*\.?\d*$/.test(raw)) {
+      setAmount(raw);
     }
   };
+
+  // Format the stored raw value with thousands separators for display
+  const displayAmount = amount === ''
+    ? ''
+    : (() => {
+        const [integer, decimal] = amount.split('.');
+        const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return decimal !== undefined ? `${formattedInteger}.${decimal}` : formattedInteger;
+      })();
 
   // Convert
   const parsedAmount = parseFloat(amount) || 0;
@@ -240,7 +250,7 @@ export default function CurrencyConverter() {
               <input
                 type="text"
                 inputMode="decimal"
-                value={amount}
+                value={displayAmount}
                 onChange={handleAmountChange}
                 className="from-to py-4! pl-10! pr-4! font-light! text-2xl!"
                 placeholder="0.00"
