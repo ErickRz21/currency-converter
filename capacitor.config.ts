@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.currency.app',
   appName: 'Currency Converter',
-  webDir: 'www'
+  webDir: 'dist'
 };
 
 export default config;

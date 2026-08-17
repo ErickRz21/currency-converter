@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { CurrenciesResponse, RatesResponse } from '../types/currency';
+import { THEMES, DEFAULT_THEME, type ThemeName, type ThemeClasses } from '../themes';
 
 const POPULAR_PAIRS = [
   { from: 'MXN', to: 'USD' },
@@ -15,9 +16,10 @@ interface CurrencySelectProps {
   currencies: CurrenciesResponse;
   onChange: (code: string) => void;
   align?: 'left' | 'right';
+  tc: ThemeClasses;
 }
 
-function CurrencySelect({ value, currencies, onChange, align = 'left' }: CurrencySelectProps) {
+function CurrencySelect({ value, currencies, onChange, align = 'left', tc }: CurrencySelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -60,8 +62,6 @@ function CurrencySelect({ value, currencies, onChange, align = 'left' }: Currenc
     if (e.key === 'Escape') { setOpen(false); setQuery(''); }
   }
 
-  const selectedName = currencies[value] as string | undefined;
-
   return (
     <div ref={containerRef} className="relative w-full" onKeyDown={handleKeyDown}>
       {/* Trigger button */}
@@ -73,17 +73,16 @@ function CurrencySelect({ value, currencies, onChange, align = 'left' }: Currenc
         aria-expanded={open}
       >
         <span className="truncate font-semibold tracking-wide">{value}</span>
-        {/* <span className="truncate text-emerald-300/60 text-xs hidden sm:block">{selectedName}</span> */}
       </button>
 
       {/* Dropdown */}
       {open && (
         <div
-          className={`absolute z-50 mt-2 w-60 rounded-xl border border-emerald-700/60 bg-neutral-950/60 backdrop-blur-sm shadow-md shadow-emerald-950 overflow-hidden ${align === 'right' ? 'right-0' : 'left-0'}`}
+          className={`absolute z-50 mt-2 w-60 rounded-xl border ${tc.dropdownBorder} bg-neutral-950/60 backdrop-blur-sm shadow-md ${tc.dropdownShadow} overflow-hidden ${align === 'right' ? 'right-0' : 'left-0'}`}
         >
           {/* Search input */}
-          <div className="p-2 border-b border-emerald-700/40">
-            <div className="relative flex items-center text-emerald-400">
+          <div className={`p-2 border-b ${tc.searchBorder}`}>
+            <div className={`relative flex items-center ${tc.searchIcon}`}>
               <svg className="absolute left-3 w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
@@ -93,7 +92,7 @@ function CurrencySelect({ value, currencies, onChange, align = 'left' }: Currenc
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Search currency…"
-                className="w-full bg-neutral-900/40 border border-emerald-700/40 rounded-lg py-2 pl-9 pr-3 text-sm text-white placeholder-emerald-300 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                className={`w-full bg-neutral-900/40 border ${tc.searchBorder} rounded-lg py-2 pl-9 pr-3 text-sm text-white ${tc.searchPlaceholder} focus:outline-none ${tc.searchFocus} transition-all`}
               />
             </div>
           </div>
@@ -105,7 +104,7 @@ function CurrencySelect({ value, currencies, onChange, align = 'left' }: Currenc
             className="max-h-52 overflow-y-auto py-1 overscroll-contain"
           >
             {filtered.length === 0 ? (
-              <li className="px-4 py-3 text-sm text-emerald-300/40 text-center">No results</li>
+              <li className={`px-4 py-3 text-sm ${tc.noResults} text-center`}>No results</li>
             ) : (
               filtered.map(([code, name]) => (
                 <li
@@ -115,16 +114,16 @@ function CurrencySelect({ value, currencies, onChange, align = 'left' }: Currenc
                   onClick={() => handleSelect(code)}
                   className={`flex items-center gap-3 px-4 py-1.5 cursor-pointer text-xs transition-colors
                     ${code === value
-                      ? 'bg-emerald-500/20 text-white'
-                      : 'border-l border-transparent text-emerald-100  hover:border-emerald-300 hover:text-white'
+                      ? `${tc.selectedItem} text-white`
+                      : `border-l border-transparent text-white/70 ${tc.itemHover} hover:text-white`
                     }`}
                 >
                   <div className="flex flex-col min-w-0 flex-1">
-                    <span className="font-semibold text-emerald-300 text-sm leading-tight">{code}</span>
+                    <span className={`font-semibold ${tc.codeText} text-sm leading-tight`}>{code}</span>
                     <span className="text-xs leading-snug wrap-break-word">{name as string}</span>
                   </div>
                   {code === value && (
-                    <svg className="ml-auto w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`ml-auto w-3.5 h-3.5 ${tc.accent} shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
@@ -149,18 +148,51 @@ export default function CurrencyConverter() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [isSwapping, setIsSwapping] = useState(false);
 
-  // Fetch the list of currencies once on mount
+  // ── Theme state ────────────────────────────────────────────────────────────
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>(DEFAULT_THEME);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  const theme = THEMES[currentTheme];
+  const tc = theme.classes;
+
+  // Sync theme to <html> so Astro static components (Footer, badge) can use it.
+  // Also set CSS vars globally so elements outside the card wrapper inherit them.
   useEffect(() => {
-    fetch('/api/currencies')
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.documentElement.style.setProperty('--theme-card-border-rgb', theme.cssVars.cardBorderRgb);
+    document.documentElement.style.setProperty('--theme-card-bg-rgb', theme.cssVars.cardBgRgb);
+    document.documentElement.style.setProperty('--theme-glow-rgb', theme.cssVars.glowRgb);
+  }, [currentTheme, theme.cssVars]);
+
+  // Close picker on outside click
+  useEffect(() => {
+    function onPointerDown(e: PointerEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setPickerOpen(false);
+      }
+    }
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, []);
+
+  // Fetch the list of currencies once on mount
+  // NOTE: Using the external API directly so this works in Capacitor (no Astro server).
+  useEffect(() => {
+    fetch('https://api.frankfurter.dev/v2/currencies')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch currencies');
         return res.json();
       })
-      .then((data: CurrenciesResponse) => {
-        setCurrencies(data);
+      .then((raw: { iso_code: string; name: string }[]) => {
+        // v2 returns an array; transform into { CODE: name } map
+        const map: CurrenciesResponse = {};
+        for (const currency of raw) {
+          map[currency.iso_code] = currency.name;
+        }
+        setCurrencies(map);
       })
       .catch((err) => {
         setError(err.message);
@@ -168,15 +200,24 @@ export default function CurrencyConverter() {
   }, []);
 
   // Fetch rates when the base currency changes
+  // NOTE: Using the external API directly so this works in Capacitor (no Astro server).
   const fetchRates = useCallback((base: string) => {
     setLoading(true);
     setError(null);
-    fetch(`/api/rates?base=${base}`)
+    fetch(`https://api.frankfurter.dev/v2/rates?base=${base}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch rates');
         return res.json();
       })
-      .then((data: RatesResponse) => {
+      .then((raw: { date: string; base: string; quote: string; rate: number }[]) => {
+        // v2 returns an array of rows; normalize to { amount, base, date, rates: {} }
+        const rates: Record<string, number> = {};
+        let date = '';
+        for (const row of raw) {
+          rates[row.quote] = row.rate;
+          date = row.date;
+        }
+        const data: RatesResponse = { amount: 1, base, date, rates };
         setRates(data);
         setLoading(false);
       })
@@ -220,10 +261,72 @@ export default function CurrencyConverter() {
   const result = parsedAmount * rate;
 
   return (
-    <div className="w-full max-w-md mx-auto p-8 glass-card">
-      <div className="mb-8 text-center text-white">
+    <div
+      data-theme={currentTheme}
+      style={
+        {
+          "--theme-card-border-rgb": theme.cssVars.cardBorderRgb,
+          "--theme-card-bg-rgb": theme.cssVars.cardBgRgb,
+          "--theme-glow-rgb": theme.cssVars.glowRgb,
+        } as React.CSSProperties
+      }
+      className="w-full max-w-md lg:max-w-xl mx-auto p-4 lg:p-6 glass-card"
+    >
+      {/* Header */}
+      <div className="mb-8 text-center text-white relative">
         <h2 className="text-3xl font-medium tracking-tight mb-2">Converter</h2>
-        <p className="text-emerald-300 text-sm">Real-time exchange rates</p>
+        <p className={`${tc.subtitle} text-sm`}>Real-time exchange rates</p>
+
+        {/* ── Theme Picker ────────────────────────────────────────────────── */}
+        <div ref={pickerRef} className="absolute top-0 right-0">
+          <button
+            onClick={() => setPickerOpen((o) => !o)}
+            className="w-7 h-7 rounded-full opacity-80 hover:opacity-100 hover:scale-110 transition-all shadow-lg cursor-pointer"
+            style={{ background: theme.preview }}
+            aria-label="Change color theme"
+            title="Change theme"
+          />
+          <h1 className="text-white/40 text-sm font-medium">Theme</h1>
+
+          {pickerOpen && (
+            <div className="absolute right-0 mt-2 p-3 rounded-2xl bg-neutral-950/95 backdrop-blur-md border border-white/10 shadow-2xl z-50 min-w-max">
+              <p className="text-white/40 text-[10px] font-semibold uppercase tracking-widest mb-2.5 text-center">
+                Theme
+              </p>
+              <div className="flex gap-3">
+                {(Object.keys(THEMES) as ThemeName[]).map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => {
+                      setCurrentTheme(name);
+                      setPickerOpen(false);
+                    }}
+                    className="flex flex-col items-center gap-1.5 group"
+                    title={THEMES[name].name}
+                  >
+                    <span
+                      className={`w-7 h-7 rounded-full border-2 block transition-all duration-200 group-hover:scale-110 cursor-pointer ${
+                        currentTheme === name
+                          ? "border-white scale-110 shadow-lg"
+                          : "border-white/20 group-hover:border-white/50"
+                      }`}
+                      style={{ background: THEMES[name].preview }}
+                    />
+                    <span
+                      className={`text-[9px] font-medium transition-colors ${
+                        currentTheme === name
+                          ? "text-white"
+                          : "text-white/40 group-hover:text-white/70"
+                      }`}
+                    >
+                      {THEMES[name].name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {error ? (
@@ -240,11 +343,15 @@ export default function CurrencyConverter() {
         <div className="space-y-6 relative">
           {/* Amount input */}
           <div className="relative">
-            <label className="block text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">
+            <label
+              className={`block text-xs font-semibold ${tc.label} uppercase tracking-wider mb-2`}
+            >
               Amount
             </label>
             <div className="relative flex items-center text-2xl">
-              <span className="absolute left-4 font-medium text-emerald-400 select-none pointer-events-none">
+              <span
+                className={`absolute left-4 font-medium ${tc.accent} select-none pointer-events-none`}
+              >
                 $
               </span>
               <input
@@ -261,7 +368,9 @@ export default function CurrencyConverter() {
           <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 z-20 relative">
             {/* From */}
             <div className="min-w-0">
-              <label className="block text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">
+              <label
+                className={`block text-xs font-semibold ${tc.label} uppercase tracking-wider mb-2`}
+              >
                 From
               </label>
               {currencies ? (
@@ -270,6 +379,7 @@ export default function CurrencyConverter() {
                   currencies={currencies}
                   onChange={setFromCurrency}
                   align="left"
+                  tc={tc}
                 />
               ) : (
                 <div className="h-12.5 skeleton w-full" />
@@ -280,7 +390,7 @@ export default function CurrencyConverter() {
             <div className="flex justify-center pb-1">
               <button
                 onClick={handleSwap}
-                className={`p-3 rounded-full bg-transparent border-2 border-emerald-800 hover:border-emerald-400 cursor-pointer text-white shadow-lg transition-all duration-300 hover:rotate-180 active:scale-90 ${isSwapping ? "swap-spin" : ""}`}
+                className={`p-3 rounded-full bg-transparent border-2 ${tc.swapButton} cursor-pointer text-white shadow-lg transition-all duration-300 active:scale-90 ${isSwapping ? "swap-spin" : ""}`}
                 aria-label="Swap currencies"
               >
                 <svg
@@ -301,7 +411,9 @@ export default function CurrencyConverter() {
 
             {/* To */}
             <div className="min-w-0">
-              <label className="block text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2 text-right">
+              <label
+                className={`block text-xs font-semibold ${tc.label} uppercase tracking-wider mb-2 text-right`}
+              >
                 To
               </label>
               {currencies ? (
@@ -310,6 +422,7 @@ export default function CurrencyConverter() {
                   currencies={currencies}
                   onChange={setToCurrency}
                   align="right"
+                  tc={tc}
                 />
               ) : (
                 <div className="h-12.5 skeleton w-full" />
@@ -318,16 +431,20 @@ export default function CurrencyConverter() {
           </div>
 
           {/* Result */}
-          <div className="mt-8 bg-emerald-950/50 rounded-xl p-6 border border-emerald-700/50 text-center relative overflow-hidden min-h-30 flex flex-col justify-center">
+          <div
+            className={`mt-8 ${tc.resultBg} rounded-xl p-6 border ${tc.resultBorder} text-center relative overflow-hidden min-h-30 flex flex-col justify-center`}
+          >
             {loading ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 bg-emerald-900/20 backdrop-blur-sm z-10 fade-slide-up">
+              <div
+                className={`absolute inset-0 flex flex-col items-center justify-center p-6 space-y-4 ${tc.loadingOverlay} backdrop-blur-sm z-10 fade-slide-up`}
+              >
                 <div className="w-3/4 h-12 skeleton mx-auto rounded-lg"></div>
                 <div className="w-1/2 h-4 skeleton mx-auto rounded-lg"></div>
               </div>
             ) : (
               <div className="fade-slide-up">
                 <div className="text-4xl sm:text-5xl font-light text-white tracking-tight wrap-break-word">
-                  <span className="text-emerald-400 mr-2">
+                  <span className={`${tc.accent} mr-2`}>
                     {toCurrency === "USD"
                       ? "$"
                       : toCurrency === "EUR"
@@ -336,7 +453,13 @@ export default function CurrencyConverter() {
                           ? "£"
                           : toCurrency === "MXN"
                             ? "$"
-                            : ""}
+                            : toCurrency === "CNY"
+                              ? "¥"
+                              : toCurrency === "JPY"
+                                ? "¥"
+                                : toCurrency === "CAD"
+                                  ? "$"
+                                  : ""}
                   </span>
                   {result.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -345,7 +468,9 @@ export default function CurrencyConverter() {
                 </div>
 
                 {rates?.date && (
-                  <div className="mt-4 text-xs lg:text-sm text-emerald-300/70 py-1 px-3 bg-black/60 rounded-full inline-block border border-emerald-700/50">
+                  <div
+                    className={`mt-4 text-xs lg:text-sm ${tc.rateText} py-1 px-3 bg-black/60 rounded-full inline-block border ${tc.rateChipBorder}`}
+                  >
                     Rate {rates.rates[toCurrency]?.toFixed(4) || 1} • Updated{" "}
                     {rates.date}
                   </div>
@@ -364,7 +489,7 @@ export default function CurrencyConverter() {
                     setFromCurrency(pair.from);
                     setToCurrency(pair.to);
                   }}
-                  className="text-xs px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 hover:text-emerald-200 transition-colors bg-emerald-950/50 shadow-sm cursor-pointer"
+                  className={`text-xs px-3 py-1.5 rounded-full border ${tc.pill} transition-colors shadow-sm cursor-pointer`}
                 >
                   {pair.from} → {pair.to}
                 </button>
