@@ -43,9 +43,14 @@ body::before {
   border: 1px solid rgba(var(--theme-card-border-rgb, 116, 251, 181), 0.8);
   border-radius: 1.5rem;
   box-shadow:
-    0 0 0 1px rgba(var(--theme-card-border-rgb, 116, 251, 181), 0.04),
-    0 32px 64px rgba(0, 0, 0, 0.5),
-    0 0 80px rgba(var(--theme-glow-rgb, 116, 251, 181), 0.06);
+    /* subtle inner ring */
+    0 0 0 1px rgba(var(--theme-card-border-rgb, 116, 251, 181), 0.06),
+    /* dark depth shadow */
+    0 24px 48px rgba(0, 0, 0, 0.55),
+    /* coloured glow — driven by per-theme vars */
+    0 0 var(--theme-glow-spread, 80px) rgba(var(--theme-glow-rgb, 116, 251, 181), var(--theme-glow-opacity, 0.12)),
+    /* tighter inner accent halo */
+    0 0 30px rgba(var(--theme-glow-rgb, 116, 251, 181), calc(var(--theme-glow-opacity, 0.12) * 0.5));
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 

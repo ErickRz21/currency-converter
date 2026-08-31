@@ -42,6 +42,10 @@ export interface AppTheme {
     cardBorderRgb: string;
     cardBgRgb: string;
     glowRgb: string;
+    /** opacity of the coloured outer glow (0–1 string, e.g. "0.18") */
+    glowOpacity: string;
+    /** blur spread of the coloured outer glow in px, e.g. "120" */
+    glowSpread: string;
   };
   classes: ThemeClasses;
 }
@@ -54,6 +58,8 @@ export const THEMES: Record<ThemeName, AppTheme> = {
       cardBorderRgb: '116, 251, 181',
       cardBgRgb: '11, 15, 13',
       glowRgb: '116, 251, 181',
+      glowOpacity: '0.22',
+      glowSpread: '100',
     },
     classes: {
       label: 'text-emerald-300',
@@ -86,6 +92,8 @@ export const THEMES: Record<ThemeName, AppTheme> = {
       cardBorderRgb: '96, 165, 250',
       cardBgRgb: '11, 13, 25',
       glowRgb: '96, 165, 250',
+      glowOpacity: '0.20',
+      glowSpread: '90',
     },
     classes: {
       label: 'text-blue-300',
@@ -118,6 +126,8 @@ export const THEMES: Record<ThemeName, AppTheme> = {
       cardBorderRgb: '251, 113, 133',
       cardBgRgb: '25, 11, 13',
       glowRgb: '251, 113, 133',
+      glowOpacity: '0.24',
+      glowSpread: '110',
     },
     classes: {
       label: 'text-rose-300',
@@ -150,6 +160,8 @@ export const THEMES: Record<ThemeName, AppTheme> = {
       cardBorderRgb: '167, 139, 250',
       cardBgRgb: '15, 11, 25',
       glowRgb: '167, 139, 250',
+      glowOpacity: '0.20',
+      glowSpread: '95',
     },
     classes: {
       label: 'text-violet-300',

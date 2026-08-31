@@ -268,6 +268,8 @@ export default function CurrencyConverter() {
           "--theme-card-border-rgb": theme.cssVars.cardBorderRgb,
           "--theme-card-bg-rgb": theme.cssVars.cardBgRgb,
           "--theme-glow-rgb": theme.cssVars.glowRgb,
+          "--theme-glow-opacity": theme.cssVars.glowOpacity,
+          "--theme-glow-spread": theme.cssVars.glowSpread + "px",
         } as React.CSSProperties
       }
       className="w-full max-w-md lg:max-w-xl mx-auto p-4 lg:p-6 glass-card"
@@ -307,7 +309,7 @@ export default function CurrencyConverter() {
                     <span
                       className={`w-7 h-7 rounded-full border-2 block transition-all duration-200 group-hover:scale-110 cursor-pointer ${
                         currentTheme === name
-                          ? "border-white scale-110 shadow-lg"
+                          ? "scale-110 shadow-lg"
                           : "border-white/20 group-hover:border-white/50"
                       }`}
                       style={{ background: THEMES[name].preview }}
