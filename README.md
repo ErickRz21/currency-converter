@@ -1,4 +1,4 @@
-# 💱 Currency Converter
+# Currency Converter
 
 A modern, cross-platform currency conversion tool built with Astro, React, and Capacitor.
 
